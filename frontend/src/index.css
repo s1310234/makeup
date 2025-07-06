@@ -1,0 +1,147 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+
+  background-color: #fce7f3;
+  background-image: url('/background-cosmetics.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.form-wrapper {
+  /* background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px); */
+  width: 100%;
+  max-width: 600px;
+  border-radius: 24px;
+  padding: 20px 40px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  margin: 0 auto;
+}
+
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 600;
+  color: black;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.question-block {
+  margin-bottom: 1rem;
+}
+
+.question-label {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: black;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 1.5rem auto;
+  text-align: center;
+}
+
+.privacy-select,
+.answer-textarea {
+  width: 100%;             /* 親に合わせて100% */
+  box-sizing: border-box;  /* padding含めて幅を固定 */
+  display: block;
+  margin-bottom: 0.8rem;   /* 適度な余白 */
+}
+
+
+.privacy-select {
+  display: block;
+  max-width: 200px;
+  width: 60%;
+  padding: 12px;
+  font-size: 0.99rem;
+  height: 30px;
+  border: 2px solid black;
+  border-radius: 12px;
+  outline: none;
+  margin-bottom: 0rem;
+  box-sizing: border-box;
+}
+
+.privacy-select:focus {
+  border-color: black;
+  box-shadow: 0 0 0 1px black;
+}
+
+.answer-textarea {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  padding: 16px;
+  font-size: 0.99rem;
+  height: 110px;
+  border: 2px solid black;
+  border-radius: 16px;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.answer-textarea:focus {
+  border-color: black;
+  box-shadow: 0 0 0 1px black;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 13px 0;
+  margin-top: 1rem;
+  background-color: white;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px pink;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: white;
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result-box {
+  margin-top: 2.5rem;
+  padding: 24px;
+  background: white;
+  border: 1px solid #f9a8d4;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.result-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.result-text {
+  white-space: pre-wrap;
+  font-size: 1.125rem;
+  color: #374151;
+  line-height: 1.6;
+}
