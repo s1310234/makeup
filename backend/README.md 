@@ -1,0 +1,33 @@
+# Beauty Backend API
+
+## 概要
+FastAPIを使った美容関連のAPIサーバーです。  
+フロントエンドからHTTPリクエストでメイク情報を受け取り、解析や生成AI連携を行います。
+
+## 通信関連スペック
+- 通信方式：HTTP REST API
+- ポート番号：3001
+- 主なAPIエンドポイント：
+  - POST /makeup : メイク情報送信・解析
+  - GET /status : サーバー稼働状況確認
+- 認証方式：APIキー認証（.envに設定）
+
+## 環境構築
+
+1. 仮想環境作成・有効化
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+
+2. 必要パッケージインストール
+
+pip install -r requirements.txt
+
+3. 環境変数設定（.envファイルをプロジェクトルートに作成）
+
+4. サーバー起動
+
+uvicorn app:app --reload --port 3001
+ 
+
