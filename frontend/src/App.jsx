@@ -27,7 +27,7 @@ export default function App() {
 
     setLoading(true);
     try {
-  const response = await fetch("http://localhost:3001/api/gpt", {
+  const response = await fetch("https://makeup-3jf5.onrender.com/api/gpt", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
@@ -42,23 +42,9 @@ export default function App() {
   setResult(data.reply);
 } catch (error) {
   setResult(`エラーが発生しました: ${error.message}`);
-}
+} 
 
-    // try {
-    //   const response = await fetch("http://localhost:3001/api/gpt", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ prompt }),
-    //   });
-    //   if (!response.ok) throw new Error("サーバーエラー");
-    //   const data = await response.json();
-    //   setResult(data.reply);
-    // } catch (error) {
-    //   setResult(`エラーが発生しました: ${error.message}`);
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
+};
 
   return (
     <div className="app-container">
