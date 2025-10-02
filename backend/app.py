@@ -1,48 +1,9 @@
-# from flask import Flask, request, jsonify
-# from flask_cors import CORS
-# from dotenv import load_dotenv
-# from openai import OpenAI
-# import os
-
-# load_dotenv()  # .envファイルからAPIキーを読み込む
-
-# app = Flask(__name__)
-# CORS(app)
-
-# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# @app.route("/api/gpt", methods=["POST"])
-# def generate_plan():
-#     data = request.get_json()
-#     prompt = data.get("prompt")
-
-#     if not prompt:
-#         return jsonify({"error": "プロンプトが空です"}), 400
-
-#     try:
-#         response = client.chat.completions.create(
-#             model="gpt-3.5-turbo",  # または "gpt-3.5-turbo"
-#             messages=[
-#                 {"role": "system", "content": "あなたはメイクの専門家です。"},
-#                 {"role": "user", "content": prompt}
-#             ]
-#         )
-#         reply = response.choices[0].message.content
-#         return jsonify({"reply": reply})
-
-#     except Exception as e:
-#         print("❌ GPTエラー:", str(e))
-#         return jsonify({"error": str(e)}), 500
-
-# if __name__ == "__main__":
-#     app.run(port=3001, debug=True)
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
-from openai import OpenAI  # ← 旧: import openai
+from openai import OpenAI  
 
 load_dotenv()
 
@@ -67,25 +28,34 @@ app.add_middleware(
 )
 
 # OpenAI クライアントの初期化（v1.0.0 以降）
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+#client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class Prompt(BaseModel):
     prompt: str
 
 @app.post("/api/gpt")
 async def gpt_response(data: Prompt):
-    if not data.prompt:
-        raise HTTPException(status_code=400, detail="プロンプトが空です")
-
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # または gpt-4
+        # 1. 説明文を生成
+        text_res = client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "あなたはメイクの専門家です。"},
-                {"role": "user", "content": data.prompt}
+                {"role": "system", "content": "あなたは手作りアクセサリーの魅力を伝える専門家です。"},
+                {"role": "user", "content": f"以下のアイテムを魅力的に説明してください: {data.prompt}"}
             ]
         )
-        return {"reply": response.choices[0].message.content}
+        description = text_res.choices[0].message.content
+
+        # 2. 画像を生成
+        img_res = client.images.generate(
+            model="gpt-image-1",
+            prompt=f"{data.prompt} の手作りアクセサリー風デザイン写真",
+            size="512x512"
+        )
+        image_url = img_res.data[0].url
+
+        return {"description": description, "imageUrl": image_url}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
