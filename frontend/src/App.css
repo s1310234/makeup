@@ -12,23 +12,14 @@ h1 {
   margin-bottom: 30px;
 }
 
-label {
+.question-label {
   font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
-select, textarea {
-  width: 100%;
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-textarea {
-  height: 70px;
+.option-label {
+  display: block; /* 各ラベルをブロック要素にする */
+  margin: 4px 0;
 }
 
 button {
