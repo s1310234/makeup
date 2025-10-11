@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 from openai import OpenAI  
+import traceback
 
 load_dotenv()
 
@@ -27,15 +28,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# OpenAI クライアントの初期化（v1.0.0 以降）
-#client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 class Prompt(BaseModel):
     prompt: str
 
 @app.post("/api/gpt")
 async def gpt_response(data: Prompt):
     try:
+        print("✅ /api/gpt にリクエストを受信:", data.prompt)
+
         # 1. 説明文を生成
         text_res = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -48,16 +48,26 @@ async def gpt_response(data: Prompt):
 
         # 2. 画像を生成
         img_res = client.images.generate(
-            model="gpt-image-1",
+            model="dall-e-3",
             prompt=f"{data.prompt} の手作りアクセサリー風デザイン写真",
-            size="512x512"
+            size="1024x1024"
         )
         image_url = img_res.data[0].url
 
         return {"description": description, "imageUrl": image_url}
 
     except Exception as e:
+        print("⚠️ GPT APIエラー:", e, flush=True)
+        print("詳細なエラー情報を出力します", flush=True) 
+        traceback.print_exc() 
         raise HTTPException(status_code=500, detail=str(e))
+        
+# 🔽 Renderが要求するポートでFastAPIを起動
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 10000))  # RenderはPORTを自動設定
+    uvicorn.run(app, host="0.0.0.0", port=port)     
+
 
 
 
