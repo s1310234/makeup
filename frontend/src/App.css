@@ -60,3 +60,13 @@ button:hover {
   align-items: center;
   justify-content: center;
 }
+
+.result-image {
+  max-width: 100%;       /* 親要素の幅を超えない */
+  height: auto;          /* アスペクト比を維持 */
+  border-radius: 12px;   /* 角を少し丸める（任意） */
+  display: block;        /* 中央揃えをしやすく */
+  margin: 1em auto;      /* 上下に余白＋中央揃え */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 影をつける（任意） */
+}
+
