@@ -79,7 +79,7 @@ export default function App() {
 
     setLoading(true);
     try {
-      const response = await fetch("https://makeup-3jf5.onrender.com/api/gemini", {
+      const response = await fetch("https://makeup-3jf5.onrender.com/api/gpt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
