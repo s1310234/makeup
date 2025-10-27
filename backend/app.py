@@ -54,7 +54,7 @@ async def gemini_response(data: Prompt):
         description = text_res.text.strip()
 
         # 画像プロンプト
-         image_prompt = f"""
+        image_prompt = f"""
         Handmade cute {data.prompt} accessory.
         No human, no ear, product only.
         Soft light, macro shot, white background, cute pastel tone.
