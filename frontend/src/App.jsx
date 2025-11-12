@@ -133,7 +133,7 @@ export default function App() {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "送信中..." : "✨ GPTに送信 ✨"}
+          {loading ? "送信中..." : "✨ Geminiに送信 ✨"}
         </button>
 
         {result.description && (
