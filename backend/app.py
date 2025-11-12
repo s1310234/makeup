@@ -51,7 +51,7 @@ async def gpt_response(data: Prompt):
         print("📝 description:", description)
 
         ### ✅ Nano Banana 画像生成
-        image_model = genai.GenerativeModel("gemini-2.5-flash-image-preview")
+        image_model = genai.GenerativeModel("gemini-2.5-flash-image")
 
         image_prompt = f"""
         Handmade {data.prompt} accessory product photo.
