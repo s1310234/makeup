@@ -61,7 +61,7 @@ async def gpt_response(data: Prompt):
         img_res = image_model.generate_content(image_prompt)
         print("📦 img_res:", img_res)
 
-        img_data = img_res.candidates[0].content.parts[0].inline_data.data
+        img_data = img_res[0].b64_json
         image_url = f"data:image/png;base64,{img_data}"
 
         return {
