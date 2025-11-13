@@ -27,6 +27,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ Render用: ヘルスチェック
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "FastAPI is running on Render!"}
+
 
 class Prompt(BaseModel):
     prompt: str
@@ -61,7 +66,7 @@ async def gpt_response(data: Prompt):
         img_res = image_model.generate_content(image_prompt)
         print("📦 img_res:", img_res)
 
-        img_data = img_res[0].b64_json
+        img_data = img_res.parts[0].inline_data.data
         image_url = f"data:image/png;base64,{img_data}"
 
         return {
