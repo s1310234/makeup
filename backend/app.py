@@ -66,7 +66,16 @@ async def gpt_response(data: Prompt):
         img_res = image_model.generate_content(image_prompt)
         print("📦 img_res:", img_res)
 
-        img_data = img_res.parts[0].inline_data.data
+         # ✅ 新しいGemini APIの構造に対応
+        img_data = None
+        try:
+            img_data = img_res.parts[0].inline_data.data
+        except Exception:
+            try:
+                img_data = img_res.candidates[0].content.parts[0].inline_data.data
+            except Exception:
+                raise HTTPException(500, detail="画像データを取得できませんでした")
+
         image_url = f"data:image/png;base64,{img_data}"
 
         return {
