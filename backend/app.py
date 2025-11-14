@@ -65,34 +65,7 @@ async def gpt_response(data: Prompt):
 
         img_res = image_model.generate_content(image_prompt)
 
-        # 画像生成についてのログを出力
-        print("📦 Gemini Raw Response:", img_res)
-
-        if not img_res.candidates:
-            print("❌ candidates がありません（画像生成失敗）")
-            raise HTTPException(500, detail="画像生成に失敗しました")
-
-        parts = img_res.candidates[0].content.parts
-        print(f"🔍 parts 数: {len(parts)}")
-
-        for i, p in enumerate(parts):
-            print(f"--- Part {i} ---")
-            print("type:", p.type if hasattr(p, "type") else "未知")
-            print("inline_data:", hasattr(p, "inline_data"))
-            if hasattr(p, "inline_data"):
-                print("mime_type:", p.inline_data.mime_type)
-                print("base64 length:", len(p.inline_data.data))
-
-        # 🚨 inline_data 抽出
-        inline_part = next((p for p in parts if hasattr(p, "inline_data")), None)
-
-        if not inline_part:
-            print("❌ inline_data が存在しません（画像生成失敗）")
-            raise HTTPException(500, detail="画像データが取得できませんでした")
-
-        img_data = inline_part.inline_data.data
-        image_url = f"data:{inline_part.inline_data.mime_type};base64,{img_data}"
-
+        # # 元のコード
         # print("📦 img_res:", img_res)
 
         #  # ✅ 新しいGemini APIの構造に対応
@@ -107,16 +80,54 @@ async def gpt_response(data: Prompt):
 
         # image_url = f"data:image/png;base64,{img_data}"
 
-        return {
-            "description": description,
-            "imageUrl": image_url,
-        }
+        # # 画像生成についてのログを出力
+        # print("📦 Gemini Raw Response:", img_res)
 
-    except Exception as e:
-        print("⚠️ Gemini API Error:", e)
-        traceback.print_exc()
-        raise HTTPException(500, detail=str(e))
+        # if not img_res.candidates:
+        #     print("❌ candidates がありません（画像生成失敗）")
+        #     raise HTTPException(500, detail="画像生成に失敗しました")
 
+        # parts = img_res.candidates[0].content.parts
+        # print(f"🔍 parts 数: {len(parts)}")
+
+        # for i, p in enumerate(parts):
+        #     print(f"--- Part {i} ---")
+        #     print("type:", p.type if hasattr(p, "type") else "未知")
+        #     print("inline_data:", hasattr(p, "inline_data"))
+        #     if hasattr(p, "inline_data"):
+        #         print("mime_type:", p.inline_data.mime_type)
+        #         print("base64 length:", len(p.inline_data.data))
+
+        # # 🚨 inline_data 抽出
+        # inline_part = next((p for p in parts if hasattr(p, "inline_data")), None)
+
+        # if not inline_part:
+        #     print("❌ inline_data が存在しません（画像生成失敗）")
+        #     raise HTTPException(500, detail="画像データが取得できませんでした")
+
+        # img_data = inline_part.inline_data.data
+        # image_url = f"data:{inline_part.inline_data.mime_type};base64,{img_data}"
+
+        # 修正版
+        img_data = inline_part.inline_data.data
+
+        # inline_data.data が bytes の場合
+        if isinstance(img_data, bytes):
+            img_data = base64.b64encode(img_data).decode()
+
+                return {
+                    "description": description,
+                    "imageUrl": image_url,
+                }
+
+            except Exception as e:
+                print("⚠️ Gemini API Error:", e)
+                traceback.print_exc()
+                raise HTTPException(500, detail=str(e))
+
+        image_url = f"data:image/png;base64,{img_data}"
+
+        print("inline_data.data type:", type(inline_part.inline_data.data))
 
 if __name__ == "__main__":
     import uvicorn
