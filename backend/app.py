@@ -64,19 +64,48 @@ async def gpt_response(data: Prompt):
         """
 
         img_res = image_model.generate_content(image_prompt)
-        print("📦 img_res:", img_res)
 
-         # ✅ 新しいGemini APIの構造に対応
-        img_data = None
-        try:
-            img_data = img_res.parts[0].inline_data.data
-        except Exception:
-            try:
-                img_data = img_res.candidates[0].content.parts[0].inline_data.data
-            except Exception:
-                raise HTTPException(500, detail="画像データを取得できませんでした")
+        # 画像生成についてのログを出力
+        print("📦 Gemini Raw Response:", img_res)
 
-        image_url = f"data:image/png;base64,{img_data}"
+        if not img_res.candidates:
+            print("❌ candidates がありません（画像生成失敗）")
+            raise HTTPException(500, detail="画像生成に失敗しました")
+
+        parts = img_res.candidates[0].content.parts
+        print(f"🔍 parts 数: {len(parts)}")
+
+        for i, p in enumerate(parts):
+            print(f"--- Part {i} ---")
+            print("type:", p.type if hasattr(p, "type") else "未知")
+            print("inline_data:", hasattr(p, "inline_data"))
+            if hasattr(p, "inline_data"):
+                print("mime_type:", p.inline_data.mime_type)
+                print("base64 length:", len(p.inline_data.data))
+
+        # 🚨 inline_data 抽出
+        inline_part = next((p for p in parts if hasattr(p, "inline_data")), None)
+
+        if not inline_part:
+            print("❌ inline_data が存在しません（画像生成失敗）")
+            raise HTTPException(500, detail="画像データが取得できませんでした")
+
+        img_data = inline_part.inline_data.data
+        image_url = f"data:{inline_part.inline_data.mime_type};base64,{img_data}"
+
+        # print("📦 img_res:", img_res)
+
+        #  # ✅ 新しいGemini APIの構造に対応
+        # img_data = None
+        # try:
+        #     img_data = img_res.parts[0].inline_data.data
+        # except Exception:
+        #     try:
+        #         img_data = img_res.candidates[0].content.parts[0].inline_data.data
+        #     except Exception:
+        #         raise HTTPException(500, detail="画像データを取得できませんでした")
+
+        # image_url = f"data:image/png;base64,{img_data}"
 
         return {
             "description": description,
