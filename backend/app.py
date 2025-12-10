@@ -36,8 +36,9 @@ def root():
 class Prompt(BaseModel):
     prompt: str
 
-@app.post("/api/gpt")
-async def gpt_response(data: Prompt):
+@app.post("/api/gemini")
+async def gemini_endpoint(data: Prompt):
+    return await gpt_response(data)
     try:
         print("✅ Request:", data.prompt)
 
