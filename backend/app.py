@@ -7,11 +7,9 @@ import traceback
 import base64
 import google.generativeai as genai
 
-
 load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
-
 if not api_key:
     raise RuntimeError("❌ GEMINI_API_KEY が見つかりません")
 
@@ -21,34 +19,29 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["*"],
     allow_origins=[
-    "https://localhost:5173",
-    "http://localhost:5173",
-    "https://makeup-3jf5.onrender.com",
-    "https://your-vercel-domain.vercel.app"
+        "http://localhost:5173",
+        "https://localhost:5173",
+        "https://makeup-3jf5.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ✅ Render用: ヘルスチェック
 @app.get("/")
 def root():
-    return {"status": "ok", "message": "FastAPI is running on Render!"}
-
+    return {"status": "ok"}
 
 class Prompt(BaseModel):
     prompt: str
-
 
 @app.post("/api/gpt")
 async def gpt_response(data: Prompt):
     try:
         print("✅ Request:", data.prompt)
 
-        ### ✅ まず説明文を生成
+        # ---- テキスト生成 ----
         prompt = f"""
         {data.prompt}のアクセサリーについて、やさしく親しみやすい商品紹介文を作成してください。
         ・100～150文字
@@ -61,84 +54,39 @@ async def gpt_response(data: Prompt):
 
         print("📝 description:", description)
 
-        ### ✅ Nano Banana 画像生成
-        image_model = genai.GenerativeModel("gemini-2.5-flash-image")
-
+        # ---- 画像生成 ----
         image_prompt = f"""
         Handmade {data.prompt} accessory product photo.
         White soft background, no people, refined and elegant macro shot.
         """
 
+        image_model = genai.GenerativeModel("gemini-2.5-flash-image")
         img_res = image_model.generate_content(image_prompt)
 
-        # # 元のコード
-        # print("📦 img_res:", img_res)
-
-        #  # ✅ 新しいGemini APIの構造に対応
-        # img_data = None
-        # try:
-        #     img_data = img_res.parts[0].inline_data.data
-        # except Exception:
-        #     try:
-        #         img_data = img_res.candidates[0].content.parts[0].inline_data.data
-        #     except Exception:
-        #         raise HTTPException(500, detail="画像データを取得できませんでした")
-
-        # image_url = f"data:image/png;base64,{img_data}"
-
-        # # 画像生成についてのログを出力
-        # print("📦 Gemini Raw Response:", img_res)
-
-        # if not img_res.candidates:
-        #     print("❌ candidates がありません（画像生成失敗）")
-        #     raise HTTPException(500, detail="画像生成に失敗しました")
-
-        # parts = img_res.candidates[0].content.parts
-        # print(f"🔍 parts 数: {len(parts)}")
-
-        # for i, p in enumerate(parts):
-        #     print(f"--- Part {i} ---")
-        #     print("type:", p.type if hasattr(p, "type") else "未知")
-        #     print("inline_data:", hasattr(p, "inline_data"))
-        #     if hasattr(p, "inline_data"):
-        #         print("mime_type:", p.inline_data.mime_type)
-        #         print("base64 length:", len(p.inline_data.data))
-
-        # # 🚨 inline_data 抽出
-        # inline_part = next((p for p in parts if hasattr(p, "inline_data")), None)
-
-        # if not inline_part:
-        #     print("❌ inline_data が存在しません（画像生成失敗）")
-        #     raise HTTPException(500, detail="画像データが取得できませんでした")
-
-        # img_data = inline_part.inline_data.data
-        # image_url = f"data:{inline_part.inline_data.mime_type};base64,{img_data}"
-
-        # 修正版
+        inline_part = img_res.candidates[0].content.parts[0]
         img_data = inline_part.inline_data.data
 
-        # inline_data.data が bytes の場合
         if isinstance(img_data, bytes):
             img_data = base64.b64encode(img_data).decode()
 
-                return {
-                    "description": description,
-                    "imageUrl": image_url,
-                }
-
-            except Exception as e:
-                print("⚠️ Gemini API Error:", e)
-                traceback.print_exc()
-                raise HTTPException(500, detail=str(e))
-
         image_url = f"data:image/png;base64,{img_data}"
 
-        print("inline_data.data type:", type(inline_part.inline_data.data))
+        return {
+            "description": description,
+            "imageUrl": image_url,
+        }
+
+    except Exception as e:
+        print("⚠️ Gemini API Error:", e)
+        traceback.print_exc()
+        raise HTTPException(500, detail=str(e))
+
 
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 10000))
-    uvicorn.run(app, host="0.0.0.0", port=port)     
+    uvicorn.run(app, host="0.0.0.0", port=port)
+ 
 
 
 
