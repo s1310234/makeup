@@ -57,7 +57,9 @@ async def gemini_endpoint(data: Prompt):
         # ---- 画像生成 ----
         image_prompt = f"""
         Handmade {data.prompt} accessory product photo.
+        High-quality, realistic, single item, center composition.
         White soft background, no people, refined and elegant macro shot.
+        NO TEXT, no words, no letters, no watermark, no captions.
         """
 
         image_model = genai.GenerativeModel("gemini-2.5-flash-image")
